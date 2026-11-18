@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ReOil Receipt</title>
+<style>
+:root{--ground:#F3ECEA;--paper:#fff;--ink:#231B1B;--muted:#6B6262;--rule:#E2D6D4;--brand:#A3161B;--gold:#E3A21A;--ok:#2E7D4F;--okbg:#E6F2EA;--tint:#FBEFEF}
+@media (prefers-color-scheme:dark){:root{--ground:#140E0E;--paper:#1E1717;--ink:#F1E9E8;--muted:#B5A9A7;--rule:#3A2F2E;--brand:#E2575B;--gold:#F0BB4A;--ok:#6FCB93;--okbg:#18291F;--tint:#2A1C1C}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;padding:28px 16px 40px}
+.wrap{max-width:420px;margin:0 auto;display:grid;gap:16px}
+.demo{background:var(--gold);color:#2A1B00;font-weight:600;font-size:13px;text-align:center;padding:7px 12px;border-radius:999px}
+.card{background:var(--paper);border-radius:14px;padding:24px 22px 20px;box-shadow:0 8px 28px rgba(60,20,20,.12)}
+.brand{display:flex;align-items:center;gap:10px}
+.drop{width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--brand);flex:none}
+h1{margin:0;font-size:26px;color:var(--brand)}
+.brand p{margin:0;font-size:12.5px;color:var(--muted)}
+.ok{display:flex;align-items:center;gap:10px;margin:18px 0 6px;padding:10px 12px;background:var(--okbg);border-radius:10px;color:var(--ok);font-weight:600}
+.big{text-align:center;margin:18px 0 6px}
+.big .v{font-size:46px;font-weight:700;color:var(--brand);line-height:1}
+.big .l{font-size:13px;color:var(--muted);margin-top:6px}
+dl{margin:16px 0 0;display:grid;grid-template-columns:auto 1fr;gap:9px 12px;font-size:15px}
+dt{color:var(--muted)} dd{margin:0;text-align:right;font-family:ui-monospace,Menlo,Consolas,monospace}
+hr{border:0;border-top:1.5px dashed var(--rule);margin:16px 0}
+.total{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;font-size:18px}
+.total b{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:22px;color:var(--brand)}
+.impact{background:var(--tint);border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.5}
+.note{font-size:12.5px;color:var(--muted);text-align:center;line-height:1.5;margin:14px 0 0}
+.foot{font-size:12px;color:var(--muted);text-align:center;line-height:1.6}
+.empty{text-align:center;color:var(--muted);line-height:1.6;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="demo" id="demo" hidden>DEMO RECEIPT · simulated deposit</div>
+  <div class="card">
+    <div class="brand"><div class="drop"></div><div><h1>ReOil</h1><p>Smart used cooking oil collection</p></div></div>
+    <div id="receipt" hidden>
+      <div class="ok">✓ Deposit received, thank you</div>
+      <div class="big"><div class="v" id="rm"></div><div class="l">reward earned</div></div>
+      <dl>
+        <dt>Receipt no.</dt><dd id="no"></dd>
+        <dt>Date</dt><dd id="date"></dd>
+        <dt>Station</dt><dd>V3 Kitchen, UTP</dd>
+        <dt>Oil weighed</dt><dd id="kg"></dd>
+        <dt>Volume</dt><dd id="litre"></dd>
+        <dt>Rate</dt><dd>RM1.00 / litre</dd>
+        <dt>Check code</dt><dd id="code"></dd>
+      </dl>
+      <hr>
+      <div class="total"><span>Total reward</span><b id="rm2"></b></div>
+      <hr>
+      <div class="impact">You kept <b id="ml"></b> of used cooking oil out of the drains. It goes to a licensed recycler to become biodiesel.</div>
+      <p class="note">Show this receipt and its check code at the collection counter to claim your reward.</p>
+    </div>
+    <p class="empty" id="empty" hidden>Scan the QR code on a ReOil station after a deposit to see your receipt here.</p>
+  </div>
+  <p class="foot">ReOil · Group 22 Quadra Engineers · MFB2102 ETP II<br>Volume = weight ÷ 0.92 g/ml</p>
+</div>
+<script>
+function render(){
+  var m=(location.hash||"").match(/^#(\d{1,5})-(\d{1,5})-([A-Z0-9]{4})(-D)?$/i);
+  document.getElementById("receipt").hidden=!m;
+  document.getElementById("empty").hidden=!!m;
+  document.getElementById("demo").hidden=!(m&&m[4]);
+  if(!m)return;
+  var no=m[1],g=parseInt(m[2],10),litres=g/0.92/1000,rm="RM"+litres.toFixed(2);
+  document.getElementById("no").textContent="#"+("0000"+no).slice(-4);
+  document.getElementById("kg").textContent=(g/1000).toFixed(3)+" kg";
+  document.getElementById("litre").textContent=litres.toFixed(3)+" L";
+  document.getElementById("ml").textContent=Math.round(litres*1000)+" ml";
+  document.getElementById("rm").textContent=rm;
+  document.getElementById("rm2").textContent=rm;
+  document.getElementById("code").textContent=m[3].toUpperCase();
+  var d=new Date();
+  document.getElementById("date").textContent=d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"})+" "+d.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
+}
+window.addEventListener("hashchange",render);render();
+</script>
+</body>
+</html>
